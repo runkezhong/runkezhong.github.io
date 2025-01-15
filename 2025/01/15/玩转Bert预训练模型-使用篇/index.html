@@ -1,0 +1,699 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Runke Zhong">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="1.什么是BERT？BERT是Bidirectional Encoder Representation from Transformers的缩写，其意思是多Transformer的双向编码器表示法，在2018年10月由Google AI研究院发布的一种预训练模型，它与GPT模型都基于在《Attention Is All You Need》提出的Transformer结构，分别代表着两种基于Tran">
+<meta property="og:type" content="article">
+<meta property="og:title" content="玩转Bert预训练模型-使用篇">
+<meta property="og:url" content="http://example.com/2025/01/15/%E7%8E%A9%E8%BD%ACBert%E9%A2%84%E8%AE%AD%E7%BB%83%E6%A8%A1%E5%9E%8B-%E4%BD%BF%E7%94%A8%E7%AF%87/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="1.什么是BERT？BERT是Bidirectional Encoder Representation from Transformers的缩写，其意思是多Transformer的双向编码器表示法，在2018年10月由Google AI研究院发布的一种预训练模型，它与GPT模型都基于在《Attention Is All You Need》提出的Transformer结构，分别代表着两种基于Tran">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-01-15T06:28:13.069Z">
+<meta property="article:modified_time" content="2025-01-15T06:34:26.299Z">
+<meta property="article:author" content="Runke Zhong">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>玩转Bert预训练模型-使用篇 - Hexo</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="玩转Bert预训练模型-使用篇"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2025-01-15 14:28" pubdate>
+          2025年1月15日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          2.3k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          20 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">玩转Bert预训练模型-使用篇</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h2 id="1-什么是BERT？"><a href="#1-什么是BERT？" class="headerlink" title="1.什么是BERT？"></a>1.什么是BERT？</h2><p>BERT是Bidirectional Encoder Representation from Transformers的缩写，其意思是多Transformer的双向编码器表示法，在2018年10月由Google AI研究院发布的一种预训练模型，它与GPT模型都基于在《Attention Is All You Need》提出的Transformer结构，分别代表着两种基于Transformer架构的实现路子，其适用的任务是不同的，BERT使用了Transformer架构中的编码器，侧重于学习上下文相关的词表示，现在的Embedding Model是有基于BERT实现改进的，而GPT则使用了解码器。侧重于学习生成连贯文本的能力。</p>
+<p>预训练模型，所有的预训练模型都是用大、超大的数据集训练后的网络模型，其已经可以使用了，但一般都是通用的，同时你也可以对其进行微调，这一实现是借鉴了计算机视觉领域的CNN神经网络的预训练。</p>
+<p>BERT的论文：<a target="_blank" rel="noopener" href="https://arxiv.org/abs/1810.04805">https://arxiv.org/abs/1810.04805</a></p>
+<p>注：这里只做简要介绍，关于BERT的原理后续会写一篇文章做专门的介绍。</p>
+<h2 id="2-BERT的配置"><a href="#2-BERT的配置" class="headerlink" title="2.BERT的配置"></a>2.BERT的配置</h2><p>BERT的研究人员在发布该模型时提出了两种标准配置</p>
+<ul>
+<li>BERT-base</li>
+<li>BERT-large</li>
+</ul>
+<p>在中文领域的BERT，国内可以在modelscope上下载模型，来源于huggingface的备份，国外可以在huggingface上下载</p>
+<ul>
+<li>bert-base-chinese</li>
+</ul>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs awk">https:<span class="hljs-regexp">//</span>www.modelscope.cn<span class="hljs-regexp">/models/</span>tiansz/bert-base-chinese<br>https:<span class="hljs-regexp">//</span>huggingface.co<span class="hljs-regexp">/google-bert/</span>bert-base-chinese<br></code></pre></td></tr></table></figure>
+
+<p>BERT-base由12层编码器叠加而成。每层编码器都使用了12个注意力头，其中前馈神经网络层由768个隐藏神经元组成，所以从BERT-base得到的特征向量的大小是768。</p>
+<h2 id="3-在BERT预训练模型上继续训练"><a href="#3-在BERT预训练模型上继续训练" class="headerlink" title="3.在BERT预训练模型上继续训练"></a>3.在BERT预训练模型上继续训练</h2><p>BERT模型是在一个巨大的语料库上针对两种特定任务进行预训练，分别是掩码语言模型构建和下局预测，这个巨大的语料库是多伦多图书语料库（Toronto BookCorpus）和维基百科数据集，在预训练完成之后，保存与训练好的BERT模型，对于一个新的任务，无须重新开始训练，而是为新任务微调其权重。</p>
+<h2 id="4-下载BERT-base-chinese预训练模型"><a href="#4-下载BERT-base-chinese预训练模型" class="headerlink" title="4.下载BERT-base-chinese预训练模型"></a>4.下载BERT-base-chinese预训练模型</h2><h3 id="4-1在modelscope下载"><a href="#4-1在modelscope下载" class="headerlink" title="4.1在modelscope下载"></a>4.1在modelscope下载</h3><figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs cmake">pip <span class="hljs-keyword">install</span> modelscope<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight clean"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs clean">#模型下载<br><span class="hljs-keyword">from</span> modelscope <span class="hljs-keyword">import</span> snapshot_download<br>model_dir = snapshot_download(<span class="hljs-string">&#x27;tiansz/bert-base-chinese&#x27;</span>)<br></code></pre></td></tr></table></figure>
+
+<h3 id="4-2在huggingface下载"><a href="#4-2在huggingface下载" class="headerlink" title="4.2在huggingface下载"></a>4.2在huggingface下载</h3><h4 id="4-2-1配置国内镜像源"><a href="#4-2-1配置国内镜像源" class="headerlink" title="4.2.1配置国内镜像源"></a>4.2.1配置国内镜像源</h4><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs routeros"><span class="hljs-comment"># linux</span><br><span class="hljs-built_in">export</span> <span class="hljs-attribute">HF_ENDPOINT</span>=https://hf-mirror.com<br><span class="hljs-comment"># windows</span><br><span class="hljs-variable">$env</span>:HF_ENDPOINT = <span class="hljs-string">&quot;https://hf-mirror.com&quot;</span><br></code></pre></td></tr></table></figure>
+
+<h4 id="4-2-2下载huggingface库"><a href="#4-2-2下载huggingface库" class="headerlink" title="4.2.2下载huggingface库"></a>4.2.2下载huggingface库</h4><figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">pip</span> install huggingface-hub==<span class="hljs-number">0</span>.<span class="hljs-number">24</span>.<span class="hljs-number">5</span><br></code></pre></td></tr></table></figure>
+
+<h4 id="4-2-3使用huggingface-cli下载模型"><a href="#4-2-3使用huggingface-cli下载模型" class="headerlink" title="4.2.3使用huggingface-cli下载模型"></a>4.2.3使用huggingface-cli下载模型</h4><figure class="highlight jboss-cli"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs jboss-cli">huggingface-cli download <span class="hljs-params">--resume-download</span> google-bert/bert-base-chinese <span class="hljs-params">--local-dir</span> <span class="hljs-string">/mnt/e/huggingface_models/bert-base-chinese</span><br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>–resume-download：参数为<code>模型的发布者/模型名称</code></li>
+<li>–local-dir：指定保存路径</li>
+</ul>
+<h2 id="4-准备工作"><a href="#4-准备工作" class="headerlink" title="4.准备工作"></a>4.准备工作</h2><h3 id="4-1transformer库简要介绍"><a href="#4-1transformer库简要介绍" class="headerlink" title="4.1transformer库简要介绍"></a>4.1transformer库简要介绍</h3><p>在研究自然语言处理的过程中，存在一些问题，如数据集格式缺乏统一规范，更换不同的数据集，需要做复杂的数据适配的工作，这无疑是为研究增加了麻烦，在工程上也增加了项目的风险，与数据集相应，预训练模型也缺乏统一的规范，不同的实验室发布的模型，可能在下载方法、使用方式上都不尽相同，这不利于研究人员们进行研究和复现。</p>
+<p>基于以上诉求，HuggingFace社区提供了<code>datasets</code>和<code>transformer</code>两套工具，分别用于数据集管理和模型管理，那在扩散模型上也有一套新的<code>diffusers</code>工具，这则是后话了，总之，transformer库提供了统一的模型接口，现在绝大多数开源的模型都可以使用transformer上使用，成为了一个事实上的标准。</p>
+<h3 id="4-2下载transformer库"><a href="#4-2下载transformer库" class="headerlink" title="4.2下载transformer库"></a>4.2下载transformer库</h3><figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">pip</span> install transformer==<span class="hljs-number">4</span>.<span class="hljs-number">39</span>.<span class="hljs-number">2</span><br></code></pre></td></tr></table></figure>
+
+<h2 id="5-BERT模型的使用"><a href="#5-BERT模型的使用" class="headerlink" title="5.BERT模型的使用"></a>5.BERT模型的使用</h2><figure class="highlight capnproto"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs capnproto"><span class="hljs-comment"># 导入transformer库中的BertModel类 加载BERT模型</span><br><span class="hljs-keyword">from</span> transformers <span class="hljs-keyword">import</span> BertModel<br><span class="hljs-comment"># 导入transformer库中的BertTokenizer类 加载BERT编码工具</span><br><span class="hljs-keyword">from</span> transformers <span class="hljs-keyword">import</span> BertTokenier<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs ini"><span class="hljs-comment"># 模型的路径</span><br><span class="hljs-attr">pretrain_path</span> = <span class="hljs-string">&quot;/mnt/e/huggingface_models/bert-base-chinese/&quot;</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="5-1tokenizer编码工具的使用"><a href="#5-1tokenizer编码工具的使用" class="headerlink" title="5.1tokenizer编码工具的使用"></a>5.1tokenizer编码工具的使用</h3><h4 id="编码工具是如何工作的？"><a href="#编码工具是如何工作的？" class="headerlink" title="编码工具是如何工作的？"></a>编码工具是如何工作的？</h4><p>文字是一个抽象的概念，不是计算机擅长处理的数据单元，计算机擅长处理的是数字运算，所以需要把抽象的文字转换为数字，让计算机能够做数学运算。</p>
+<h5 id="编码的工作流程有4个步骤："><a href="#编码的工作流程有4个步骤：" class="headerlink" title="编码的工作流程有4个步骤："></a>编码的工作流程有4个步骤：</h5><ol>
+<li>定义字典</li>
+<li>句子预处理</li>
+<li>分词</li>
+<li>编码</li>
+</ol>
+<h5 id="编码实现："><a href="#编码实现：" class="headerlink" title="编码实现："></a>编码实现：</h5><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><code class="hljs routeros"><span class="hljs-comment"># 定义字典</span><br>vocab = &#123;<br>    <span class="hljs-string">&#x27;&lt;SOS&gt;&#x27;</span>: 0,<br>    <span class="hljs-string">&#x27;&lt;EOS&gt;&#x27;</span>: 1,<br>    <span class="hljs-string">&#x27;the&#x27;</span>: 2,<br>    <span class="hljs-string">&#x27;quick&#x27;</span>: 3,<br>    <span class="hljs-string">&#x27;brown&#x27;</span>: 4,<br>    <span class="hljs-string">&#x27;fox&#x27;</span>: 5,<br>    <span class="hljs-string">&#x27;jumps&#x27;</span>: 6,<br>    <span class="hljs-string">&#x27;over&#x27;</span>: 7,<br>    <span class="hljs-string">&#x27;a&#x27;</span>: 8,<br>    <span class="hljs-string">&#x27;lazy&#x27;</span>: 9,<br>    <span class="hljs-string">&#x27;dog&#x27;</span>: 10,<br>&#125;<br><br><span class="hljs-comment"># 简单编码</span><br>sent = <span class="hljs-string">&#x27;the quick brown fox jumps over a lazy dog&#x27;</span><br>sent = <span class="hljs-string">&#x27;&lt;SOS&gt; &#x27;</span> + sent + <span class="hljs-string">&#x27; &lt;EOS&gt;&#x27;</span><br><span class="hljs-built_in">print</span>(sent)<br><br><span class="hljs-comment"># 分词，英文可以以空格分词，但是中文要是用jieba分词</span><br><span class="hljs-comment">#英文分词</span><br>words = sent.split()<br><span class="hljs-built_in">print</span>(words)<br><br><span class="hljs-comment">#编码为数字</span><br>encode = [vocab[i] <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> words]<br><span class="hljs-built_in">print</span>(encode)<br></code></pre></td></tr></table></figure>
+
+<h5 id="特殊符号的含义："><a href="#特殊符号的含义：" class="headerlink" title="特殊符号的含义："></a>特殊符号的含义：</h5><p>[CLS]：头部</p>
+<p>[SEP]：尾部</p>
+<p>[SEP]：中间</p>
+<p>[PAD]：填空</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs routeros"><span class="hljs-comment">#简单编码</span><br>sent = <span class="hljs-string">&#x27;the quick brown fox jumps over a lazy dog&#x27;</span><br>sent = <span class="hljs-string">&#x27;&lt;SOS&gt; &#x27;</span> + sent + <span class="hljs-string">&#x27; &lt;EOS&gt;&#x27;</span><br><span class="hljs-built_in">print</span>(sent)<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs routeros"><span class="hljs-comment"># 加载编码工具</span><br>tokenizer = BertTokenizer.from_pretrained(pretrain_path)<br><span class="hljs-comment"># 准备文本</span><br>sents = [<br>    <span class="hljs-string">&quot;科学技术是第一生产力&quot;</span>,<br>    <span class="hljs-string">&quot;我思故我在&quot;</span>,<br>    <span class="hljs-string">&quot;任何足够先进的科技，都与魔法无异&quot;</span><br>]<br><span class="hljs-comment"># 对文本进行编码，得到词嵌入向量</span><br>out = tokenizer.encode(<span class="hljs-attribute">text</span>=sents[0])<br><span class="hljs-built_in">print</span>(out)<br><span class="hljs-built_in">print</span>(len(out))<br><span class="hljs-built_in">print</span>(type(out))<br><br><span class="hljs-comment"># 对文本向量进行解码，得到原始文本</span><br>tokenizer.decode(out)<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs stylus">sen_code = tokenizer<span class="hljs-selector-class">.encode_plus</span>(<span class="hljs-string">&quot;让过去过去&quot;</span>, <span class="hljs-string">&quot;让未来到来&quot;</span>)<br><span class="hljs-function"><span class="hljs-title">print</span><span class="hljs-params">(sen_code)</span></span><br><span class="hljs-function"><span class="hljs-title">print</span><span class="hljs-params">(tokenizer.convert_ids_to_tokens(sen_code[<span class="hljs-string">&#x27;input_ids&#x27;</span>])</span></span>)<br></code></pre></td></tr></table></figure>
+
+<h3 id="5-2BERT的标记"><a href="#5-2BERT的标记" class="headerlink" title="5.2BERT的标记"></a>5.2BERT的标记</h3><ul>
+<li>CLS标记</li>
+<li>SEP标记</li>
+</ul>
+<h4 id="5-2-1-CLS标记"><a href="#5-2-1-CLS标记" class="headerlink" title="5.2.1 CLS标记"></a>5.2.1 CLS标记</h4><p>CLS标记，是Classify的缩写，是BERT用于表示句子级别的特殊标记，在BERT的训练过程中，CLS标记被用作整个句子的表示，它在句子中的位置是固定的，位于句子的最前面。通过训练，BERT可以学习到如何利用CLS标记来理解整个句子的语义信息。</p>
+<h4 id="5-2-2-SEP标记"><a href="#5-2-2-SEP标记" class="headerlink" title="5.2.2 SEP标记"></a>5.2.2 SEP标记</h4><p>SEP标记，即Separator的缩写，在BERT中用于分隔不同的句子或者子句。在BERT的输入序列中，每个独立的句子或者子句都会被一个SEP标记所分隔。通过这种方式，BERT可以区分不同的句子或者子句，从而在训练过程中分别对它们进行学习。SEP标记的存在使得BERT可以处理多句子输入的情况，这对于许多实际应用场景来说是非常重要的。</p>
+<h3 id="5-3BertModel模型的使用"><a href="#5-3BertModel模型的使用" class="headerlink" title="5.3BertModel模型的使用"></a>5.3BertModel模型的使用</h3><h4 id="简单使用方式"><a href="#简单使用方式" class="headerlink" title="简单使用方式"></a>简单使用方式</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 加载模型参数</span><br>model = BertModel.from_pretrained(pretrain_path)<br>sentence = <span class="hljs-string">&quot;让过去过去，让未来到来。&quot;</span><br><span class="hljs-comment"># 将文本编码为嵌入向量，return_tensors=&#x27;pt&#x27;表示输出pytorch张量</span><br>inputs = tokenizer(sentence, return_tensors=<span class="hljs-string">&#x27;pt&#x27;</span>)<br><span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">inputs = &#123;&quot;input_ids&quot;: [], &quot;token_type_ids&quot;: [], &#x27;attention_mask&#x27;: []&#125;</span><br><span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-keyword">with</span> torch.no_grad():<br>	<span class="hljs-comment"># 将输入给模型，设置输出隐藏层输出，输出注意力权重</span><br>    outputs = model(**inputs, output_hidden_states=<span class="hljs-literal">True</span>, output_attentions=<span class="hljs-literal">True</span>)<br><br>last_hidden_state = outputs.last_hidden_state<br>pooler_output = outputs.pooler_output<br>hidden_states = outputs.hidden_states<br></code></pre></td></tr></table></figure>
+
+<ol>
+<li><strong>last_hidden_state</strong>：shape是(batch_size, sequence_length, hidden_size)，hidden_size&#x3D;768，它是模型最后一层输出的隐藏状态。</li>
+<li><strong>pooler_output</strong>：shape是(batch_size, hidden_size)，这是序列的第一个token(classification token)的最后一层的隐藏状态。</li>
+<li><strong>hidden_states</strong>：这是一个输出可选项，在<code>BertModel</code>指定<code>output_hidden_states=True</code>，它是一个元组，第一个元素是embedding，其余元素是各层的输出，其余元素是12层transformer各层的输出，每个元素的形状是(batch_size, sequence_lenth, hidden_size)，共计13个元素，最后一个元素是last_hidden_state</li>
+<li><strong>attentions</strong>：这是一个输出可选项，在<code>BertModel</code>指定<code>output_attentions=True</code>，它是一个元组，含有12个元素，包含每层的注意力权重，用于计算self-attention heads的加权平均值。</li>
+</ol>
+<h4 id="获取-CLS-token的嵌入"><a href="#获取-CLS-token的嵌入" class="headerlink" title="获取[CLS]token的嵌入"></a>获取[CLS]token的嵌入</h4><figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs stylus">cls_embedding = last_hidden_state<span class="hljs-selector-attr">[:, 0, :]</span><br><span class="hljs-function"><span class="hljs-title">print</span><span class="hljs-params">(cls_embedding.shape)</span></span><br></code></pre></td></tr></table></figure>
+
+<h4 id="剖析模型输入"><a href="#剖析模型输入" class="headerlink" title="剖析模型输入"></a>剖析模型输入</h4><figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs stylus">embedding_output = model<span class="hljs-selector-class">.embeddings</span>(<br>   input_ids=inputs<span class="hljs-selector-attr">[<span class="hljs-string">&#x27;input_ids&#x27;</span>]</span><br>)<br>encoder_outputs = model<span class="hljs-selector-class">.encoder</span>(<br>    embedding_output,<br>    output_hidden_states=True<br>)<br>embedding_output == encoder_outputs<span class="hljs-selector-class">.hidden_states</span><span class="hljs-selector-attr">[0]</span><br></code></pre></td></tr></table></figure>
+
+<h4 id="更复杂的一种使用方式-从预训练的BERT模型中提取嵌入"><a href="#更复杂的一种使用方式-从预训练的BERT模型中提取嵌入" class="headerlink" title="更复杂的一种使用方式-从预训练的BERT模型中提取嵌入"></a>更复杂的一种使用方式-从预训练的BERT模型中提取嵌入</h4><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><code class="hljs routeros"><span class="hljs-keyword">from</span> transformers import BertModel, BertTokenizer<br>import torch<br><br><span class="hljs-comment"># 模型的路径</span><br>pretrain_path = <span class="hljs-string">&quot;/mnt/e/huggingface_models/bert-base-chinese/&quot;</span><br><br><span class="hljs-comment"># 编码工具</span><br>tokenizer = BertTokenizer.from_pretrained(pretrain_path)<br><span class="hljs-comment"># bert模型</span><br>model = BertModel.from_pretrained(pretrain_path)<br><br><span class="hljs-comment"># 定义输入句</span><br>sentence = <span class="hljs-string">&#x27;好好学习，天天向上。&#x27;</span><br><br><span class="hljs-comment"># 对该句进行分词</span><br>tokens = tokenizer.tokenize(sentence)<br><span class="hljs-built_in">print</span>(tokens)<br><br><span class="hljs-comment"># 添加标记</span><br>tokens = [<span class="hljs-string">&#x27;[CLS]&#x27;</span>] + tokens + [<span class="hljs-string">&#x27;[SEP]&#x27;</span>]<br><span class="hljs-built_in">print</span>(tokens)<br><span class="hljs-built_in">print</span>(len(tokens))<br><br><span class="hljs-comment"># 假设长度为15</span><br>tokens = tokens + [<span class="hljs-string">&#x27;[PAD]&#x27;</span>] + [<span class="hljs-string">&#x27;[PAD]&#x27;</span>] + [<span class="hljs-string">&#x27;[PAD]&#x27;</span>]<br><span class="hljs-built_in">print</span>(len(tokens))<br><br><span class="hljs-comment"># 创建注意力掩码，在有[PAD]标记的位置上，注意力掩码值为0，其他位置则为1</span><br>attention_mask = [1 <span class="hljs-keyword">if</span> i!=<span class="hljs-string">&#x27;[PAD]&#x27;</span> <span class="hljs-keyword">else</span> 0 <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> tokens]<br><span class="hljs-built_in">print</span>(attention_mask)<br><br><span class="hljs-comment"># 将所有标记转换为对应的标记ID值</span><br>token_ids = tokenizer.convert_tokens_to_ids(tokens)<br><span class="hljs-built_in">print</span>(token_ids)<br><br><span class="hljs-comment"># 转换为张量</span><br>token_ids = torch.tensor(token_ids).unsqueeze(0)<br>attention_mask = torch.tensor(attention_mask).unsqueeze(0)<br><span class="hljs-built_in">print</span>(token_ids.shape)<br><span class="hljs-built_in">print</span>(attention_mask.shape)<br><br><span class="hljs-comment"># 获取嵌入向量</span><br>outputs = model(token_ids, <span class="hljs-attribute">attention_mask</span>=attention_mask, <span class="hljs-attribute">output_hidden_states</span>=<span class="hljs-literal">True</span>, <span class="hljs-attribute">output_attentions</span>=<span class="hljs-literal">True</span>)<br><br>last_hidden_state = outputs.last_hidden_state<br><span class="hljs-built_in">print</span>(last_hidden_state.shape)<br><br><span class="hljs-comment"># 第一个标记[CLS]的特征</span><br>last_hidden_state[0][0]<br><span class="hljs-comment"># 第二个标记好的特征</span><br>last_hidden_state[0][1]<br><br><span class="hljs-comment"># 判断第二个标记与第三个标记是不是相等</span><br>last_hidden_state[0][1] == last_hidden_state[0][1]<br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h3><ul>
+<li>BERT论文：<a target="_blank" rel="noopener" href="https://arxiv.org/abs/1810.04805">https://arxiv.org/abs/1810.04805</a></li>
+<li>【NLP基础知识-bert向量化】BERT模型输出pooler_output和last_hidden_state详解和用法：<a target="_blank" rel="noopener" href="https://blog.csdn.net/lov1993/article/details/133696617">https://blog.csdn.net/lov1993/article/details/133696617</a></li>
+<li>简明Jieba中文分词教程（分词、关键词提取、词性标注、计算位置）：<a target="_blank" rel="noopener" href="https://blog.csdn.net/lty_sky/article/details/105567080">https://blog.csdn.net/lty_sky/article/details/105567080</a></li>
+<li>BERT模型返回值：<a target="_blank" rel="noopener" href="https://blog.csdn.net/sunyueqinghit/article/details/105157609">https://blog.csdn.net/sunyueqinghit/article/details/105157609</a></li>
+<li>BERT基础教程 Transformer大模型实战 [印] 苏达哈尔桑·拉维昌迪兰（Sudharsan Ravichandiran）</li>
+</ul>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>玩转Bert预训练模型-使用篇</div>
+      <div>http://example.com/2025/01/15/玩转Bert预训练模型-使用篇/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Runke Zhong</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2025年1月15日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2025/01/15/hello-world/" title="Hello World">
+                        <span class="hidden-mobile">Hello World</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
