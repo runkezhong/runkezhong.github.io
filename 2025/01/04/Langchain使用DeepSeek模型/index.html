@@ -19,25 +19,23 @@
   <meta name="author" content="Runke Zhong">
   <meta name="keywords" content="">
   
-    <meta name="description" content="一、RAG的介绍RAG，全称为Retrieval-Augmented Generation[1]，中文为检索增强生成。它是一种结合了检索和生成的技术方法，将传统的基于检索的问答系统和基于大型语言生成模型的技术相结合，提升了AI系统在回答自然语言问题时的准确性和可靠性。  如图1所示，这是一个RAG系统的流程图，用户输入一个问题，系统将问题转换为向量，然后进入向量数据库查找与问题向量相关的资料，再将">
+    <meta name="description" content="1、什么是LangchainLangchain本质上是大模型开发的一个框架(framework)，它通过连接LLM和其他组件，如向量数据库、工具、提示工程，为应用程序赋能，使得应用程序能够具备上下文意识和推理能力。 2、安装2.1 直接使用pip安装1pip install langchain-deepseek  2.2 从源码安装1git clone https:&#x2F;&#x2F;github.com&#x2F;SyJ">
 <meta property="og:type" content="article">
-<meta property="og:title" content="PolarisRAG框架的介绍">
-<meta property="og:url" content="http://example.com/2025/01/04/PolarisRAG%E6%A1%86%E6%9E%B6%E4%BB%8B%E7%BB%8D/index.html">
+<meta property="og:title" content="Langchain使用DeepSeek模型">
+<meta property="og:url" content="http://example.com/2025/01/04/Langchain%E4%BD%BF%E7%94%A8DeepSeek%E6%A8%A1%E5%9E%8B/index.html">
 <meta property="og:site_name" content="Hexo">
-<meta property="og:description" content="一、RAG的介绍RAG，全称为Retrieval-Augmented Generation[1]，中文为检索增强生成。它是一种结合了检索和生成的技术方法，将传统的基于检索的问答系统和基于大型语言生成模型的技术相结合，提升了AI系统在回答自然语言问题时的准确性和可靠性。  如图1所示，这是一个RAG系统的流程图，用户输入一个问题，系统将问题转换为向量，然后进入向量数据库查找与问题向量相关的资料，再将">
+<meta property="og:description" content="1、什么是LangchainLangchain本质上是大模型开发的一个框架(framework)，它通过连接LLM和其他组件，如向量数据库、工具、提示工程，为应用程序赋能，使得应用程序能够具备上下文意识和推理能力。 2、安装2.1 直接使用pip安装1pip install langchain-deepseek  2.2 从源码安装1git clone https:&#x2F;&#x2F;github.com&#x2F;SyJ">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://example.com/img/polarisrag_logo.png">
 <meta property="article:published_time" content="2025-01-04T04:11:00.000Z">
-<meta property="article:modified_time" content="2025-01-15T12:30:10.198Z">
+<meta property="article:modified_time" content="2025-01-28T07:07:09.837Z">
 <meta property="article:author" content="Runke Zhong">
 <meta property="article:tag" content="RAG">
 <meta property="article:tag" content="LLM">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="http://example.com/img/polarisrag_logo.png">
   
   
   
-  <title>PolarisRAG框架的介绍 - Hexo</title>
+  <title>Langchain使用DeepSeek模型 - Hexo</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -203,7 +201,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="PolarisRAG框架的介绍"></span>
+            <span id="subtitle" data-typed-text="Langchain使用DeepSeek模型"></span>
           
         </div>
 
@@ -226,7 +224,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          1k 字
+          302 字
         
       </span>
     
@@ -237,7 +235,7 @@
         
         
         
-          9 分钟
+          3 分钟
         
       </span>
     
@@ -274,29 +272,42 @@
       <div class="container nopadding-x-md" id="board-ctn">
         <div id="board">
           <article class="post-content mx-auto">
-            <h1 id="seo-header">PolarisRAG框架的介绍</h1>
+            <h1 id="seo-header">Langchain使用DeepSeek模型</h1>
             
             
               <div class="markdown-body">
                 
-                <h2 id="一、RAG的介绍"><a href="#一、RAG的介绍" class="headerlink" title="一、RAG的介绍"></a>一、RAG的介绍</h2><p>RAG，全称为Retrieval-Augmented Generation[1]，中文为检索增强生成。它是一种结合了检索和生成的技术方法，将传统的基于检索的问答系统和基于大型语言生成模型的技术相结合，提升了AI系统在回答自然语言问题时的准确性和可靠性。</p>
-<p><img src="/assets/rag_example.png" srcset="/img/loading.gif" lazyload alt="图1:RAG流程图示例"></p>
-<p>如图1所示，这是一个RAG系统的流程图，用户输入一个问题，系统将问题转换为向量，然后进入向量数据库查找与问题向量相关的资料，再将用户问题和问题相关资料组成一个prompt向量输入到大语言模型，大语言模型根据参考资料以及所写的提示来输出问题相关的答案。</p>
-<h2 id="二、大模型知识更新的困境——大模型的幻觉"><a href="#二、大模型知识更新的困境——大模型的幻觉" class="headerlink" title="二、大模型知识更新的困境——大模型的幻觉"></a>二、大模型知识更新的困境——大模型的幻觉</h2><p>最先进的LLM都会接受大量的训练数据，将广泛的常识知识存储在其神经网络的权重中，也就是模型参数，但是，当我们在询问大模型生成训练数据之外的知识时，如实时性强的知识、特定领域的知识等，大模型的输出可能会导致事实不准确，这就是我们常说的大模型幻觉（Hallucination in large language models）[2]。作为一个术语，幻觉被泛化到模型出错的情况，在这里，需要将幻觉问题缩小到模型输出虚构且未由提供的上下文或世界知识支撑的情况。</p>
-<p>大模型幻觉有两种类型：</p>
-<ol>
-<li>上下文幻觉：模型输出应与上下文的原内容一致</li>
-<li>外在幻觉：模型输出应由预训练数据集进行归一化。然而，鉴于预训练数据集的大小，按生成内容检索和识别冲突的成本过高。如果我们把预训练数据语料库视为世界知识的代理，我们实际上是试图确保模型输出具有事实性且可由外部世界知识验证，以及当模型不知道某个事实时，它应该表明这一点。</li>
-</ol>
-<p>当我们把我们所有能搜集到的人类知识都当成预训练数据语料库喂给大模型的时候，我们是在想让它能够学习人类已有的知识，并且能够去解决一些问题，但通常这些知识都是互联网上公开的数据，我们也有很多的私域知识没有拿来训练。</p>
-<h2 id="三、两种解决方法"><a href="#三、两种解决方法" class="headerlink" title="三、两种解决方法"></a>三、两种解决方法</h2><p>参数知识更新：大模型微调，我们通过如Lora[3]方法进行大模型微调，来调整大模型的网络权重，使其能够学习到新的知识。</p>
-<p>非参数知识更新：RAG，增强检索生成，我们将模型的知识存储在外部知识源，如向量数据库、知识图谱，相当于给大模型外挂了一个知识库。</p>
-<h2 id="四、PolarisRAG做了哪些工作"><a href="#四、PolarisRAG做了哪些工作" class="headerlink" title="四、PolarisRAG做了哪些工作"></a>四、PolarisRAG做了哪些工作</h2><p><img src="/assets/polarisrag.png" srcset="/img/loading.gif" lazyload alt="polarisrag"></p>
-<p>我们自己实现了一个开源的RAG框架，名字叫北极星RAG，目前已开源。能够上传pdf、md、docx等格式文档向量化存储到数据库，接入通义千问、智谱、GPT等大语言模型，也兼容openai的api方式及llama_cpp量化的gguf格式的大模型，以及本地部署的大模型，回答用户上传的文档资料相关的问题。</p>
-<p>目前正在融合知识图谱，以及支持vllm方式部署的大模型，提升框架的运行速度，去探索更好的文档处理方式，如对文档建立实体关系的抽取、识别。</p>
-<p>代码量已在1700行，正在加快兼容更多的大模型产商的模型和Huggingface、ModelScope开源的大模型。</p>
-<p>GitHub仓库链接：<a target="_blank" rel="noopener" href="https://github.com/SyJarvis/PolarisRAG">https://github.com/SyJarvis/PolarisRAG</a></p>
-<h2 id="五、参考文献"><a href="#五、参考文献" class="headerlink" title="五、参考文献"></a>五、参考文献</h2><p>[1] Lewis P, Perez E, Piktus A, et al. Retrieval-augmented generation for knowledge-intensive nlp tasks[J]. Advances in Neural Information Processing Systems, 2020, 33: 9459-9474.<br>[2]Gekhman Z, Yona G, Aharoni R, et al. Does Fine-Tuning LLMs on New Knowledge Encourage Hallucinations?[J]. arXiv preprint arXiv:2405.05904, 2024.<br>[3] Hu E J, Shen Y, Wallis P, et al. Lora: Low-rank adaptation of large language models[J]. arXiv preprint arXiv:2106.09685, 2021.</p>
+                <h2 id="1、什么是Langchain"><a href="#1、什么是Langchain" class="headerlink" title="1、什么是Langchain"></a>1、什么是Langchain</h2><p><code>Langchain</code>本质上是大模型开发的一个框架(framework)，它通过连接LLM和其他组件，如向量数据库、工具、提示工程，为应用程序赋能，使得应用程序能够具备上下文意识和推理能力。</p>
+<h2 id="2、安装"><a href="#2、安装" class="headerlink" title="2、安装"></a>2、安装</h2><h3 id="2-1-直接使用pip安装"><a href="#2-1-直接使用pip安装" class="headerlink" title="2.1 直接使用pip安装"></a>2.1 直接使用<code>pip</code>安装</h3><figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs cmake">pip <span class="hljs-keyword">install</span> langchain-deepseek<br></code></pre></td></tr></table></figure>
+
+<h3 id="2-2-从源码安装"><a href="#2-2-从源码安装" class="headerlink" title="2.2 从源码安装"></a>2.2 从源码安装</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">git <span class="hljs-built_in">clone</span> https://github.com/SyJarvis/langchain-deepseek<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">cd</span> langchain_deepseek<br>pip install -e .<br></code></pre></td></tr></table></figure>
+
+
+
+<h2 id="3、使用"><a href="#3、使用" class="headerlink" title="3、使用"></a>3、使用</h2><h3 id="3-0-前提"><a href="#3-0-前提" class="headerlink" title="3.0 前提"></a>3.0 前提</h3><p>创建一个.env文件，写入api_key</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs ini"><span class="hljs-attr">DEEPSEEK_API_KEY</span> = <span class="hljs-string">&quot;sk-...&quot;</span><br></code></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> os<br><span class="hljs-keyword">from</span> dotenv <span class="hljs-keyword">import</span> load_dotenv, find_dotenv<br><br><span class="hljs-comment"># .env 存储api_key</span><br>load_dotenv()<br></code></pre></td></tr></table></figure>
+
+<p>密钥可以从deepseek官网获取，链接如下：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://platform.deepseek.com/">https://platform.deepseek.com</a></li>
+</ul>
+<h3 id="3-1-快速使用"><a href="#3-1-快速使用" class="headerlink" title="3.1 快速使用"></a>3.1 快速使用</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> langchain_deepseek <span class="hljs-keyword">import</span> ChatDeepSeekAI<br><br>llm = ChatDeepSeekAI(<br>	model=<span class="hljs-string">&quot;deepseek-chat&quot;</span><br>)<br><br>response = llm.invoke(<span class="hljs-string">&quot;9.11和9.6哪个大&quot;</span>)<br><span class="hljs-built_in">print</span>(response.content)<br></code></pre></td></tr></table></figure>
+
+<h3 id="3-2-进阶使用"><a href="#3-2-进阶使用" class="headerlink" title="3.2 进阶使用"></a>3.2 进阶使用</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> langchain_core.prompts <span class="hljs-keyword">import</span> ChatPromptTemplate<br><br>prompt = ChatPromptTemplate.from_messages([<br>    (<span class="hljs-string">&quot;system&quot;</span>, <span class="hljs-string">&quot;You are the technical writer&quot;</span>),<br>    (<span class="hljs-string">&quot;user&quot;</span>, <span class="hljs-string">&quot;&#123;input&#125;&quot;</span>)  <span class="hljs-comment"># &#123;input&#125;为变量</span><br>])<br><br><span class="hljs-comment"># 我们可以把prompt和具体llm的调用和在一起（通过chain，chain可以理解为sequence of calls to take）</span><br>api_key = <span class="hljs-string">&quot;sk-...&quot;</span><br>llm = ChatDeepSeekAI(<br>	model=<span class="hljs-string">&quot;deepseek-chat&quot;</span>,<br>    api_key=api_key<br>)<br><br>chain = prompt | llm <br>response = chain.invoke(&#123;<span class="hljs-string">&quot;input&quot;</span>: <span class="hljs-string">&quot;9.11和9.6哪个大&quot;</span>&#125;)<br><span class="hljs-built_in">print</span>(response.content)<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> langchain_core.output_parsers <span class="hljs-keyword">import</span> StrOutputParser<br><br>output_parser = StrOutputParser()  <span class="hljs-comment"># 输出string</span><br>chain = prompt | llm | output_parser<br>content = chain.invoke(&#123;<span class="hljs-string">&quot;input&quot;</span>: <span class="hljs-string">&quot;9.11和9.6哪个大&quot;</span>&#125;)<br><span class="hljs-built_in">print</span>(content)<br></code></pre></td></tr></table></figure>
+
+
+
+<h2 id="4、参考资料"><a href="#4、参考资料" class="headerlink" title="4、参考资料"></a>4、参考资料</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/SyJarvis/langchain-deepseek">https://github.com/SyJarvis/langchain-deepseek</a></li>
+<li><a target="_blank" rel="noopener" href="https://python.langchain.com/docs/introduction/">https://python.langchain.com/docs/introduction/</a></li>
+<li><a target="_blank" rel="noopener" href="https://api-docs.deepseek.com/zh-cn/">https://api-docs.deepseek.com/zh-cn/</a></li>
+</ul>
 
                 
               </div>
@@ -323,8 +334,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>PolarisRAG框架的介绍</div>
-      <div>http://example.com/2025/01/04/PolarisRAG框架介绍/</div>
+      <div>Langchain使用DeepSeek模型</div>
+      <div>http://example.com/2025/01/04/Langchain使用DeepSeek模型/</div>
     </div>
     <div class="license-meta">
       
@@ -368,18 +379,12 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2025/01/04/Langchain%E4%BD%BF%E7%94%A8DeepSeek%E6%A8%A1%E5%9E%8B/" title="Langchain使用DeepSeek模型">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">Langchain使用DeepSeek模型</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2024/12/08/%E7%8E%A9%E8%BD%ACBert%E9%A2%84%E8%AE%AD%E7%BB%83%E6%A8%A1%E5%9E%8B-%E4%BD%BF%E7%94%A8%E7%AF%87/" title="玩转Bert预训练模型-使用篇">
-                        <span class="hidden-mobile">玩转Bert预训练模型-使用篇</span>
+                      <a href="/2025/01/04/PolarisRAG%E6%A1%86%E6%9E%B6%E4%BB%8B%E7%BB%8D/" title="PolarisRAG框架的介绍">
+                        <span class="hidden-mobile">PolarisRAG框架的介绍</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
