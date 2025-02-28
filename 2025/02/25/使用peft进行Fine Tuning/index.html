@@ -19,21 +19,26 @@
   <meta name="author" content="Runke Zhong">
   <meta name="keywords" content="">
   
-    <meta name="description" content="title:使用peft进行Fine Tuning（大模型微调）tags:[Transformer,peft,huggingface]index_img:&#x2F;img&#x2F;peft.pngdate:2025-02-251. 大模型微调简介大模型（Large Language Models, LLMs）通常是指模型参数量极大的深度学习模型，能够理解和生成人类语言，在大量的文本数据上进行">
+    <meta name="description" content="1. 大模型微调简介大模型（Large Language Models, LLMs）通常是指模型参数量极大的深度学习模型，能够理解和生成人类语言，在大量的文本数据上进行训练，可以执行广泛的任务。 我们首先会想为什么要进行大模型微调，这是因为大模型的训练成本极其高昂，同时大模型的知识库有其滞后性，以及希望在特定任务上的能力能够得到提升。为此，微调（Fine-tuning）成为了一种重要手段，其借鉴于">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Hexo">
-<meta property="og:url" content="http://example.com/2025/02/28/%E4%BD%BF%E7%94%A8peft%E8%BF%9B%E8%A1%8CFine%20Tuning/index.html">
+<meta property="og:title" content="使用peft进行Fine Tuning（大模型微调）">
+<meta property="og:url" content="http://example.com/2025/02/25/%E4%BD%BF%E7%94%A8peft%E8%BF%9B%E8%A1%8CFine%20Tuning/index.html">
 <meta property="og:site_name" content="Hexo">
-<meta property="og:description" content="title:使用peft进行Fine Tuning（大模型微调）tags:[Transformer,peft,huggingface]index_img:&#x2F;img&#x2F;peft.pngdate:2025-02-251. 大模型微调简介大模型（Large Language Models, LLMs）通常是指模型参数量极大的深度学习模型，能够理解和生成人类语言，在大量的文本数据上进行">
+<meta property="og:description" content="1. 大模型微调简介大模型（Large Language Models, LLMs）通常是指模型参数量极大的深度学习模型，能够理解和生成人类语言，在大量的文本数据上进行训练，可以执行广泛的任务。 我们首先会想为什么要进行大模型微调，这是因为大模型的训练成本极其高昂，同时大模型的知识库有其滞后性，以及希望在特定任务上的能力能够得到提升。为此，微调（Fine-tuning）成为了一种重要手段，其借鉴于">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2025-02-28T06:44:04.112Z">
-<meta property="article:modified_time" content="2025-02-28T06:48:35.061Z">
+<meta property="og:image" content="http://example.com/img/peft.png">
+<meta property="article:published_time" content="2025-02-24T16:00:00.000Z">
+<meta property="article:modified_time" content="2025-02-28T07:29:36.206Z">
 <meta property="article:author" content="Runke Zhong">
+<meta property="article:tag" content="Transformer">
+<meta property="article:tag" content="peft">
+<meta property="article:tag" content="huggingface">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/img/peft.png">
   
   
   
-  <title>Hexo</title>
+  <title>使用peft进行Fine Tuning（大模型微调） - Hexo</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -199,7 +204,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text=""></span>
+            <span id="subtitle" data-typed-text="使用peft进行Fine Tuning（大模型微调）"></span>
           
         </div>
 
@@ -210,8 +215,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2025-02-28 14:44" pubdate>
-          2025年2月28日 下午
+        <time datetime="2025-02-25 00:00" pubdate>
+          2025年2月25日 凌晨
         </time>
       </span>
     
@@ -270,13 +275,12 @@
       <div class="container nopadding-x-md" id="board-ctn">
         <div id="board">
           <article class="post-content mx-auto">
-            <h1 id="seo-header"></h1>
+            <h1 id="seo-header">使用peft进行Fine Tuning（大模型微调）</h1>
             
             
               <div class="markdown-body">
                 
-                <hr>
-<h2 id="title-使用peft进行Fine-Tuning（大模型微调）tags-Transformer-peft-huggingface-index-img-img-peft-pngdate-2025-02-25"><a href="#title-使用peft进行Fine-Tuning（大模型微调）tags-Transformer-peft-huggingface-index-img-img-peft-pngdate-2025-02-25" class="headerlink" title="title:使用peft进行Fine Tuning（大模型微调）tags:[Transformer,peft,huggingface]index_img:&#x2F;img&#x2F;peft.pngdate:2025-02-25"></a>title:使用peft进行Fine Tuning（大模型微调）<br>tags:[Transformer,peft,huggingface]<br>index_img:&#x2F;img&#x2F;peft.png<br>date:2025-02-25</h2><h3 id="1-大模型微调简介"><a href="#1-大模型微调简介" class="headerlink" title="1. 大模型微调简介"></a>1. 大模型微调简介</h3><p>大模型（Large Language Models, LLMs）通常是指模型参数量极大的深度学习模型，能够理解和生成人类语言，在大量的文本数据上进行训练，可以执行广泛的任务。</p>
+                <h3 id="1-大模型微调简介"><a href="#1-大模型微调简介" class="headerlink" title="1. 大模型微调简介"></a>1. 大模型微调简介</h3><p>大模型（Large Language Models, LLMs）通常是指模型参数量极大的深度学习模型，能够理解和生成人类语言，在大量的文本数据上进行训练，可以执行广泛的任务。</p>
 <p>我们首先会想为什么要进行大模型微调，这是因为大模型的训练成本极其高昂，同时大模型的知识库有其滞后性，以及希望在特定任务上的能力能够得到提升。为此，<code>微调（Fine-tuning）</code>成为了一种重要手段，其借鉴于计算机视觉模型的迁移学习，这是一个非常伟大的想法。总之，通过对预训练模型进行针对性调整，我们可以使其适应具体应用场景，那么更新大模型知识的方法除了微调这一种，还有一种叫RAG（增强检索生成），这就是后话了。</p>
 <h3 id="2-微调的主要方法"><a href="#2-微调的主要方法" class="headerlink" title="2. 微调的主要方法"></a>2. 微调的主要方法</h3><h4 id="2-1-全量微调（Full-Fine-tuning）"><a href="#2-1-全量微调（Full-Fine-tuning）" class="headerlink" title="2.1 全量微调（Full Fine-tuning）"></a>2.1 全量微调（Full Fine-tuning）</h4><ul>
 <li>描述：对预训练模型的所有参数都进行更新</li>
@@ -349,6 +353,17 @@
               <div class="post-metas my-3">
   
   
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/Transformer/" class="print-no-link">#Transformer</a>
+      
+        <a href="/tags/peft/" class="print-no-link">#peft</a>
+      
+        <a href="/tags/huggingface/" class="print-no-link">#huggingface</a>
+      
+    </div>
+  
 </div>
 
 
@@ -357,8 +372,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div></div>
-      <div>http://example.com/2025/02/28/使用peft进行Fine Tuning/</div>
+      <div>使用peft进行Fine Tuning（大模型微调）</div>
+      <div>http://example.com/2025/02/25/使用peft进行Fine Tuning/</div>
     </div>
     <div class="license-meta">
       
@@ -370,7 +385,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2025年2月28日</div>
+          <div>2025年2月25日</div>
         </div>
       
       
