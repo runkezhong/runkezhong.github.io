@@ -1,0 +1,677 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/%5Bobject%20Object%5D">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Runke Zhong">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="title:使用peft进行Fine Tuning（大模型微调）tags:[Transformer,peft,huggingface]index_img:&#x2F;img&#x2F;peft.pngdate:2025-02-251. 大模型微调简介大模型（Large Language Models, LLMs）通常是指模型参数量极大的深度学习模型，能够理解和生成人类语言，在大量的文本数据上进行">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Hexo">
+<meta property="og:url" content="http://example.com/2025/02/28/%E4%BD%BF%E7%94%A8peft%E8%BF%9B%E8%A1%8CFine%20Tuning/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="title:使用peft进行Fine Tuning（大模型微调）tags:[Transformer,peft,huggingface]index_img:&#x2F;img&#x2F;peft.pngdate:2025-02-251. 大模型微调简介大模型（Large Language Models, LLMs）通常是指模型参数量极大的深度学习模型，能够理解和生成人类语言，在大量的文本数据上进行">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-02-28T06:44:04.112Z">
+<meta property="article:modified_time" content="2025-02-28T06:48:35.061Z">
+<meta property="article:author" content="Runke Zhong">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>Hexo</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Runke Zhong</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text=""></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2025-02-28 14:44" pubdate>
+          2025年2月28日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          1.5k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          13 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header"></h1>
+            
+            
+              <div class="markdown-body">
+                
+                <hr>
+<h2 id="title-使用peft进行Fine-Tuning（大模型微调）tags-Transformer-peft-huggingface-index-img-img-peft-pngdate-2025-02-25"><a href="#title-使用peft进行Fine-Tuning（大模型微调）tags-Transformer-peft-huggingface-index-img-img-peft-pngdate-2025-02-25" class="headerlink" title="title:使用peft进行Fine Tuning（大模型微调）tags:[Transformer,peft,huggingface]index_img:&#x2F;img&#x2F;peft.pngdate:2025-02-25"></a>title:使用peft进行Fine Tuning（大模型微调）<br>tags:[Transformer,peft,huggingface]<br>index_img:&#x2F;img&#x2F;peft.png<br>date:2025-02-25</h2><h3 id="1-大模型微调简介"><a href="#1-大模型微调简介" class="headerlink" title="1. 大模型微调简介"></a>1. 大模型微调简介</h3><p>大模型（Large Language Models, LLMs）通常是指模型参数量极大的深度学习模型，能够理解和生成人类语言，在大量的文本数据上进行训练，可以执行广泛的任务。</p>
+<p>我们首先会想为什么要进行大模型微调，这是因为大模型的训练成本极其高昂，同时大模型的知识库有其滞后性，以及希望在特定任务上的能力能够得到提升。为此，<code>微调（Fine-tuning）</code>成为了一种重要手段，其借鉴于计算机视觉模型的迁移学习，这是一个非常伟大的想法。总之，通过对预训练模型进行针对性调整，我们可以使其适应具体应用场景，那么更新大模型知识的方法除了微调这一种，还有一种叫RAG（增强检索生成），这就是后话了。</p>
+<h3 id="2-微调的主要方法"><a href="#2-微调的主要方法" class="headerlink" title="2. 微调的主要方法"></a>2. 微调的主要方法</h3><h4 id="2-1-全量微调（Full-Fine-tuning）"><a href="#2-1-全量微调（Full-Fine-tuning）" class="headerlink" title="2.1 全量微调（Full Fine-tuning）"></a>2.1 全量微调（Full Fine-tuning）</h4><ul>
+<li>描述：对预训练模型的所有参数都进行更新</li>
+<li>优点：灵活性高</li>
+<li>缺点：需要较大的计算资源</li>
+<li>使用场景：目标任务数据量大且计算资源充足（一般不使用）</li>
+</ul>
+<h4 id="2-2-指令微调（Instruction-Tuning）"><a href="#2-2-指令微调（Instruction-Tuning）" class="headerlink" title="2.2 指令微调（Instruction Tuning）"></a>2.2 指令微调（Instruction Tuning）</h4><ul>
+<li>描述：用在特定任务任务下的明确指令和示例也对大模型进行微调，不更新模型知识</li>
+<li>优点：专注于特定任务的微调，保留了模型的基础能力</li>
+<li>缺点：限制较大，无法充分发挥模型能力</li>
+</ul>
+<h4 id="2-3-参数高效微调（Parameter-Efficient-Fine-tuning，PEFT）"><a href="#2-3-参数高效微调（Parameter-Efficient-Fine-tuning，PEFT）" class="headerlink" title="2.3 参数高效微调（Parameter-Efficient Fine-tuning，PEFT）"></a>2.3 参数高效微调（Parameter-Efficient Fine-tuning，PEFT）</h4><p>参数高效微调有以下几种，我们后续会主要实战lora微调，其他的将在后续的文章的里更新。</p>
+<h5 id="2-3-1-Adapter-Tuning"><a href="#2-3-1-Adapter-Tuning" class="headerlink" title="2.3.1 Adapter Tuning"></a>2.3.1 Adapter Tuning</h5><ul>
+<li>描述：在模型的每一层插入小型的适配模块，仅训练这些模块的参数</li>
+</ul>
+<h5 id="2-3-2-Prompt-Tuning"><a href="#2-3-2-Prompt-Tuning" class="headerlink" title="2.3.2 Prompt Tuning"></a>2.3.2 Prompt Tuning</h5><ul>
+<li>描述：通过优化提示（prompt）而非模型参数来引导模型输出</li>
+</ul>
+<h5 id="2-3-3-Prefix-Tuning"><a href="#2-3-3-Prefix-Tuning" class="headerlink" title="2.3.3 Prefix Tuning"></a>2.3.3 Prefix Tuning</h5><ul>
+<li>描述：在模型输入前添加一个连续的且任务特定的向量序列称之为prefix，固定PLM的所有参数，只更新优化特定的任务的prefix</li>
+</ul>
+<h5 id="2-3-4-LoRA-（Low-Rank-Adaptation）"><a href="#2-3-4-LoRA-（Low-Rank-Adaptation）" class="headerlink" title="2.3.4 LoRA （Low-Rank Adaptation）"></a>2.3.4 LoRA （Low-Rank Adaptation）</h5><ul>
+<li>描述：通过低秩分解的方式更新模型权重，显著减少了需要训练的参数数量。</li>
+</ul>
+<h3 id="3-微调的关键步骤"><a href="#3-微调的关键步骤" class="headerlink" title="3. 微调的关键步骤"></a>3. 微调的关键步骤</h3><h4 id="3-1-数据准备"><a href="#3-1-数据准备" class="headerlink" title="3.1 数据准备"></a>3.1 数据准备</h4><p>我们要收集与目标任务相关的标注数据。本篇文章将使用<code>alpaca_gpt4_data_zh.json</code>数据集进行微调。</p>
+<h4 id="3-2-模型选择"><a href="#3-2-模型选择" class="headerlink" title="3.2 模型选择"></a>3.2 模型选择</h4><p>我们要选择适合任务需求的预训练模型，其中Qwen系列的模型在各个尺寸上的都比较齐全，为方便演示本次演示将使用<code>qwen2.5-0.5b</code>。</p>
+<h4 id="3-3-超参数设置"><a href="#3-3-超参数设置" class="headerlink" title="3.3 超参数设置"></a>3.3 超参数设置</h4><p>我们要确定学习率、批量大小、训练轮数等超参数，但这些都需要我们进行大量的实践，也就是说，什么样的超参数会更好，更多的是根据实验人员的经验来设置的。</p>
+<h4 id="3-4-训练与验证"><a href="#3-4-训练与验证" class="headerlink" title="3.4 训练与验证"></a>3.4 训练与验证</h4><p>在训练集上进行微调，此次训练会使用huggingface的库<code>peft</code>。</p>
+<h4 id="3-5-模型评估与部署"><a href="#3-5-模型评估与部署" class="headerlink" title="3.5 模型评估与部署"></a>3.5 模型评估与部署</h4><p>在测试集上全面评估模型性能，确保其满足实际应用需求。</p>
+<h3 id="4-微调实战"><a href="#4-微调实战" class="headerlink" title="4 微调实战"></a>4 微调实战</h3><h4 id="4-1-实验环境"><a href="#4-1-实验环境" class="headerlink" title="4.1 实验环境"></a>4.1 实验环境</h4><ul>
+<li>NVIDIA RTX 3060 （12GB）显存</li>
+<li>transformers&#x3D;&#x3D;4.46.3</li>
+<li>peft&#x3D;&#x3D;0.14.0</li>
+<li>datasets</li>
+</ul>
+<h4 id="4-2-安装依赖"><a href="#4-2-安装依赖" class="headerlink" title="4.2 安装依赖"></a>4.2 安装依赖</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs python">pip install transformers<br>pip install peft<br></code></pre></td></tr></table></figure>
+
+<h4 id="4-3-准备数据集"><a href="#4-3-准备数据集" class="headerlink" title="4.3 准备数据集"></a>4.3 准备数据集</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> datasets <span class="hljs-keyword">import</span> load_dataset<br>dataset = load_dataset(<span class="hljs-string">&#x27;json&#x27;</span>, data_files=<span class="hljs-string">&#x27;alpaca_gpt4_data_zh.json&#x27;</span>)<br><span class="hljs-comment"># dataset[&quot;train&quot;].save_to_disk(&quot;alpaca_gpt4_data_zh&quot;)</span><br>dataset = dataset[<span class="hljs-string">&quot;train&quot;</span>].train_test_split(test_size=<span class="hljs-number">0.1</span>)<br></code></pre></td></tr></table></figure>
+
+<h4 id="4-4-加载预训练模型和分词器"><a href="#4-4-加载预训练模型和分词器" class="headerlink" title="4.4 加载预训练模型和分词器"></a>4.4 加载预训练模型和分词器</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 模型下载</span><br><span class="hljs-keyword">from</span> modelscope <span class="hljs-keyword">import</span> snapshot_download<br>model_dir = snapshot_download(<span class="hljs-string">&#x27;Qwen/Qwen2.5-0.5B-Instruct&#x27;</span>)<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> torch<br><span class="hljs-keyword">import</span> transformers<br><span class="hljs-keyword">from</span> transformers <span class="hljs-keyword">import</span> AutoTokenizer, AutoModelForCausalLM<br><br>tokenizer = AutoTokenizer.from_pretrained(model_dir)<br><span class="hljs-comment"># 设置精度为float16</span><br>model = AutoModelForCausalLM.from_pretrained(model_dir, torch_dtype=torch.float16)<br><span class="hljs-comment"># 将模型参数迁移到GPU</span><br>model = model.cuda()<br><span class="hljs-comment"># 打印模型结构</span><br><span class="hljs-built_in">print</span>(model)<br></code></pre></td></tr></table></figure>
+
+<h4 id="4-5-配置LoRA"><a href="#4-5-配置LoRA" class="headerlink" title="4.5 配置LoRA"></a>4.5 配置LoRA</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> peft <span class="hljs-keyword">import</span> LoraConfig, get_peft_model, set_peft_model_state_dict, get_peft_model_state_dict, TaskType<br>lora_r = <span class="hljs-number">32</span><br>lora_alpha=<span class="hljs-number">16</span><br>target_modules=[<span class="hljs-string">&quot;q_proj&quot;</span>, <span class="hljs-string">&quot;k_proj&quot;</span>, <span class="hljs-string">&quot;v_proj&quot;</span>]<br>loraconfig = LoraConfig(<br>    r=lora_r,<br>    lora_alpha=<span class="hljs-number">16</span>,<br>    target_modules=target_modules,<br>    task_type=TaskType.CAUSAL_LM<br>)<br>model = get_peft_model(model,loraconfig)<br></code></pre></td></tr></table></figure>
+
+<h4 id="4-6-数据预处理"><a href="#4-6-数据预处理" class="headerlink" title="4.6 数据预处理"></a>4.6 数据预处理</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">generate_tokenize</span>(<span class="hljs-params">one</span>):<br>    MAX_LENGTH = <span class="hljs-number">256</span><br>    input_ids,attention_mask,labels = [],[],[]<br>    instruction = tokenizer(<span class="hljs-string">&quot;\n&quot;</span>.join([<span class="hljs-string">&quot;Human: &quot;</span>+ one[<span class="hljs-string">&quot;instruction&quot;</span>],one[<span class="hljs-string">&quot;input&quot;</span>]]).strip() + <span class="hljs-string">&quot;\n\nAssistant: &quot;</span>)<br>    response = tokenizer(one[<span class="hljs-string">&quot;output&quot;</span>] + tokenizer.eos_token)<br>    input_ids = instruction[<span class="hljs-string">&quot;input_ids&quot;</span>] + response[<span class="hljs-string">&quot;input_ids&quot;</span>]<br>    attention_mask = instruction[<span class="hljs-string">&quot;attention_mask&quot;</span>] + response[<span class="hljs-string">&quot;attention_mask&quot;</span>]<br>    labels = [-<span class="hljs-number">100</span>] * <span class="hljs-built_in">len</span>(instruction[<span class="hljs-string">&quot;input_ids&quot;</span>]) + response[<span class="hljs-string">&quot;input_ids&quot;</span>]<br>    <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(input_ids) &gt; MAX_LENGTH:<br>        input_ids = input_ids[:MAX_LENGTH]<br>        attention_mask = attention_mask[:MAX_LENGTH]<br>        labels = labels[:MAX_LENGTH]<br>    <span class="hljs-keyword">return</span> &#123;<br>        <span class="hljs-string">&quot;input_ids&quot;</span>: input_ids,<br>        <span class="hljs-string">&quot;attention_mask&quot;</span>: attention_mask,<br>        <span class="hljs-string">&quot;labels&quot;</span>: labels<br>    &#125;<br><br>tokenizer_dataset = dataset.<span class="hljs-built_in">map</span>(generate_tokenize, remove_columns=dataset[<span class="hljs-string">&#x27;train&#x27;</span>].column_names)<br>train_data = tokenizer_dataset[<span class="hljs-string">&#x27;train&#x27;</span>]<br>val_data = tokenizer_dataset[<span class="hljs-string">&#x27;test&#x27;</span>]<br></code></pre></td></tr></table></figure>
+
+<h4 id="4-7-微调模型"><a href="#4-7-微调模型" class="headerlink" title="4.7 微调模型"></a>4.7 微调模型</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> transformers <span class="hljs-keyword">import</span> TrainingArguments, Trainer, DataCollatorForSeq2Seq<br><br>args = TrainingArguments(<br>    output_dir=<span class="hljs-string">&quot;./lora_ft&quot;</span>,<br>    per_device_train_batch_size=<span class="hljs-number">8</span>,<br>    logging_steps=<span class="hljs-number">10</span>,<br>    num_train_epochs=<span class="hljs-number">1</span>,<br>    fp16=<span class="hljs-literal">True</span>,<br>)<br><br>trainer = Trainer(<br>    model=model,<br>    args=args,<br>    train_dataset=train_data,<br>    data_collator=DataCollatorForSeq2Seq(tokenizer=tokenizer, padding=<span class="hljs-literal">True</span>),<br>)<br><br>trainer.train()<br></code></pre></td></tr></table></figure>
+
+<h4 id="4-8-加载原有模型并合并训练完得到的权重"><a href="#4-8-加载原有模型并合并训练完得到的权重" class="headerlink" title="4.8 加载原有模型并合并训练完得到的权重"></a>4.8 加载原有模型并合并训练完得到的权重</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> transformers <span class="hljs-keyword">import</span> AutoTokenizer, AutoModelForCausalLM<br><span class="hljs-keyword">import</span> torch<br><span class="hljs-comment"># 模型下载</span><br><span class="hljs-keyword">from</span> modelscope <span class="hljs-keyword">import</span> snapshot_download<br>model_dir = snapshot_download(<span class="hljs-string">&#x27;Qwen/Qwen2.5-0.5B-Instruct&#x27;</span>)<br><br>tokenizer = AutoTokenizer.from_pretrained(model_dir)<br>model = AutoModelForCausalLM.from_pretrained(model_dir, torch_dtype=torch.float16)<br>model = model.cuda()<br><br><span class="hljs-keyword">from</span> peft <span class="hljs-keyword">import</span> PeftModel<br>lora_model = PeftModel.from_pretrained(model, model_id=<span class="hljs-string">&quot;lora_ft/checkpoint-5492&quot;</span>)<br><br>prompt = tokenizer(<span class="hljs-string">&quot;Human: &#123;&#125;\n&#123;&#125;&quot;</span>.<span class="hljs-built_in">format</span>(<span class="hljs-string">&quot;生成一个人们去野营旅行可能需要的十件物品的清单。&quot;</span>, <span class="hljs-string">&quot;&quot;</span>).strip() + <span class="hljs-string">&quot;\n\nAssistant: &quot;</span>, return_tensors=<span class="hljs-string">&quot;pt&quot;</span>).to(model.device)<br>response = tokenizer.decode(lora_model.generate(**prompt,max_length=<span class="hljs-number">256</span>,do_sample=<span class="hljs-literal">False</span>)[<span class="hljs-number">0</span>],skip_special_tokens=<span class="hljs-literal">True</span>)<br><span class="hljs-built_in">print</span>(response)<br></code></pre></td></tr></table></figure>
+
+<h4 id="4-9-保存微调后的模型"><a href="#4-9-保存微调后的模型" class="headerlink" title="4.9 保存微调后的模型"></a>4.9 保存微调后的模型</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs python">output_model_dir = <span class="hljs-string">&quot;merge_model&quot;</span><br>mergemodel = lora_model.merge_and_unload()<br>mergemodel.save_pretrained(output_model_dir)<br>tokenizer.save_pretrained(output_model_dir)<br><br></code></pre></td></tr></table></figure>
+
+<h4 id="4-10-使用微调后的模型"><a href="#4-10-使用微调后的模型" class="headerlink" title="4.10 使用微调后的模型"></a>4.10 使用微调后的模型</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> transformers <span class="hljs-keyword">import</span> AutoModelForCausalLM, AutoTokenizer<br>model_dir = <span class="hljs-string">&quot;merge_model&quot;</span><br><br>tokenizer = AutoTokenizer.from_pretrained(model_dir)<br>model = AutoModelForCausalLM.from_pretrained(model_dir)<br>model = model.cuda()<br><br>prompt = <span class="hljs-string">&quot;生成一个人们去野营旅行可能需要的十件物品的清单。&quot;</span><br><br>messages = [<br>    &#123;<span class="hljs-string">&quot;role&quot;</span>: <span class="hljs-string">&quot;system&quot;</span>, <span class="hljs-string">&quot;content&quot;</span>: <span class="hljs-string">&quot;You are a helpful assistant.&quot;</span>&#125;,<br>    &#123;<span class="hljs-string">&quot;role&quot;</span>: <span class="hljs-string">&quot;user&quot;</span>, <span class="hljs-string">&quot;content&quot;</span>: prompt&#125;<br>]<br><br>text = tokenizer.apply_chat_template(<br>    messages,<br>    tokenize=<span class="hljs-literal">False</span>,<br>    add_generation_prompt=<span class="hljs-literal">True</span><br>)<br><br>model_inputs = tokenizer([text], return_tensors=<span class="hljs-string">&quot;pt&quot;</span>).to(model.device)<br><br>generated_ids = model.generate(<br>    **model_inputs,<br>    max_new_tokens=<span class="hljs-number">512</span><br>)<br><br>generated_ids = [<br>    output_ids[<span class="hljs-built_in">len</span>(input_ids):] <span class="hljs-keyword">for</span> input_ids, output_ids <span class="hljs-keyword">in</span> <span class="hljs-built_in">zip</span>(model_inputs.input_ids, generated_ids)<br>]<br><br>response = tokenizer.batch_decode(generated_ids, skip_special_tokens=<span class="hljs-literal">True</span>)[<span class="hljs-number">0</span>]<br><span class="hljs-built_in">print</span>(response)<br><br></code></pre></td></tr></table></figure>
+
+<p>本次微调大概需要25分钟，还是很快的，同时也会发现微调后针对同一个问题回答的效果更好了，当然这只是一个小的实验，仍然有很多工作可以去做。</p>
+<h3 id="5-参考资料"><a href="#5-参考资料" class="headerlink" title="5.参考资料"></a>5.参考资料</h3><ul>
+<li>PEFT官网：<a target="_blank" rel="noopener" href="https://hugging-face.cn/docs/peft/index">https://hugging-face.cn/docs/peft/index</a></li>
+<li>transformer参考博客：<a target="_blank" rel="noopener" href="https://jalammar.github.io/illustrated-transformer/">https://jalammar.github.io/illustrated-transformer/</a></li>
+<li>lora论文：<a target="_blank" rel="noopener" href="https://arxiv.org/abs/2106.09685">https://arxiv.org/abs/2106.09685</a></li>
+<li>使用 PEFT 进行提示微调：<a target="_blank" rel="noopener" href="https://huggingface.co/learn/cookbook/zh-CN/prompt_tuning_peft">https://huggingface.co/learn/cookbook/zh-CN/prompt_tuning_peft</a></li>
+</ul>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div></div>
+      <div>http://example.com/2025/02/28/使用peft进行Fine Tuning/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Runke Zhong</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2025年2月28日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2025/01/04/Langchain%E4%BD%BF%E7%94%A8DeepSeek%E6%A8%A1%E5%9E%8B/" title="Langchain使用DeepSeek模型">
+                        <span class="hidden-mobile">Langchain使用DeepSeek模型</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
